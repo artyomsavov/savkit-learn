@@ -1,0 +1,14 @@
+# Виртуальное окружение
+venv/
+env/
+
+# Python кэш
+__pycache__/
+*.py[cod]
+
+# Jupyter notebooks мусор
+.ipynb_checkpoints/
+
+# Системные файлы (если вдруг закинешь с Windows/Mac)
+.DS_Store
+Thumbs.db
