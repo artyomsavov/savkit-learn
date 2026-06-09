@@ -1,8 +1,14 @@
 import numpy as np
-from jaxtyping import Float
+from beartype import beartype
+from jaxtyping import Float, jaxtyped
 
+type Target = Float[np.ndarray, 'size 1']
+type Prediction = Float[np.ndarray, 'size 1']
+
+@jaxtyped(typechecker=beartype)
 def mean_squared_error(
-    y_true: Float[ndarray, 'size'], 
-    y_pred: Float[ndarray, 'size'],
-) -> Float[np.ndarray, '']:
-    return np.mean((y_true - y_pred) ** 2)
+    y_true: Target,
+    y_pred: Prediction,
+) -> float:
+    errors = (y_true - y_pred) ** 2
+    return np.mean(errors).item()
