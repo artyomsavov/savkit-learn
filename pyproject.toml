@@ -28,7 +28,7 @@ ignore = []
 quote-style = "double"
 
 [tool.pyright]
-include = ["savkit"]
+include = ["svlearn"]
 
 venvPath = "."
 venv = "venv"
@@ -36,4 +36,4 @@ venv = "venv"
 typeCheckingMode = "basic"
 
 [tool.setuptools.packages.find]
-include = ["savkit", "savkit.*"]
+include = ["svlearn", "svlearn.*"]
