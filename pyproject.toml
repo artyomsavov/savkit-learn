@@ -34,3 +34,6 @@ venvPath = "."
 venv = "venv"
 
 typeCheckingMode = "basic"
+
+[tool.setuptools.packages.find]
+include = ["savkit", "savkit.*"]

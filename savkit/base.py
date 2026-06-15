@@ -1,13 +1,12 @@
 from abc import ABC, abstractmethod
 from typing import Self
 
-from jaxtyping import Float
+from jaxtyping import Num 
 from numpy.typing import NDArray
 
-type Features = Float[NDArray, 'samples features']
-type Weights = Float[NDArray, 'features 1']
-type Target = Float[NDArray, 'samples 1']
-type Prediction = Float[NDArray, 'samples 1']
+type Features = Num[NDArray, 'samples features']
+type Target = Num[NDArray, 'samples']
+type Prediction = Num[NDArray, 'samples']
 
 class BaseEstimator(ABC):
     @abstractmethod
