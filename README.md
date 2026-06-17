@@ -7,16 +7,16 @@ A lightweight, clean, and modern machine learning library implemented from scrat
 ```text
 savkit-learn/
 ├── notebooks/
-│   ├── algorithms.ipynb    # From-scratch implementations of 10 core ML models using NumPy
+│   ├── algorithms.ipynb    # From-scratch implementations of 10 core classic ML models using NumPy
 │   └── metrics.ipynb       # Math & explanations for all regression, classification, and clustering metrics
 ├── svlearn/                # Core production-ready package
 │   ├── __init__.py         # Package initialization
 │   ├── base.py             # Abstract base classes and strict type aliases (Features, Target, Prediction)
-│   ├── linear_model/       # Linear & Logistic Regressions with vectorized gradient descent
+│   ├── linear_model/       # Linear & Logistic Regressions 
 │   │   ├── __init__.py
 │   │   ├── linear.py
 │   │   └── logistic.py
-│   ├── neighbors/          # K-Nearest Neighbors (KNN) with vectorized distance calculation
+│   ├── neighbors/          # K-Nearest Neighbors (KNN) 
 │   │   ├── __init__.py
 │   │   └── knn.py
 │   ├── tree/               # Decision Trees based on Entropy and Information Gain
@@ -25,7 +25,7 @@ savkit-learn/
 │   └── ensemble/           # Random Forest Classifier built on custom Decision Trees
 │       ├── __init__.py
 │       └── random_forest.py
-├── pyproject.toml          # Modern project configuration (uv, ruff, pyright)
+├── pyproject.toml          # Project configuration (uv, ruff, pyright)
 ├── README.md               # Main project documentation and quick start guide
 └── THEORY.md               # Comprehensive markdown guide with math behind each algorithm
 
@@ -33,23 +33,26 @@ savkit-learn/
 
 ## ✨ Key Features
 
+* **Sufficient Theory, Practical Implementation: Mathematical background is covered adequately, and every model's code is explicitly structured according to its formulas — making the connection clear without over‑theorising.
 * **Strict Type Checking & Annotations:** Leverages Python 3.12 syntax, `jaxtyping`, and `numpy.typing` for shape and type safety.
-* **Optimized NumPy Vectorization:** Avoids slow Python loops wherever possible (e.g., fully vectorized matrix distance calculations in KNN).
 * **Clean Architecture:** Strict object-oriented design using unified `fit` and `predict` interfaces via standard inheritance.
 * **Modern Tooling:** Managed with `uv`, formatted using `ruff`, and statically typed with `pyright`.
 
-## 📦 Installation
+## 📦 Installation & Setup
 
-To install the package locally in editable mode for development, clone the repository and use `uv` or `pip`:
+Clone the repository and install the library using `uv`:
 
 ```bash
-# Using uv (recommended)
-uv pip install -e .
+# Clone the repository
+git clone [https://github.com/artyomsavov/savkit-learn.git](https://github.com/artyomsavov/savkit-learn.git)
+cd savkit-learn
 
-# Or using standard pip
-pip install -e .
+# Build and install the package
+uv pip install .
 
 ```
+
+> 💡 **Note for Development:** If you want to modify the source code and see changes instantly without re-installing, use editable mode instead: `uv pip install -e .`
 
 ## 🚀 Quick Start
 
@@ -76,10 +79,11 @@ rf_predictions = rf.predict(X)
 
 ```
 
-## 📝 Notebooks Overview
+## 📝 Documentation & Notebooks Overview
 
-1. **`algorithms.ipynb`**: Contains step-by-step mathematical translation into code for 10 foundational ML algorithms using pure NumPy.
-2. **`metrics.ipynb`**: A comprehensive mathematical guide detailing all key classification (Accuracy, Precision, Recall, F1, ROC-AUC), regression (MSE, MAE, R²), and clustering (Silhouette, Adjusted Rand Index) metrics found in `scikit-learn`.
+1. **`THEORY.md`**: A comprehensive mathematical guide detailing the core concepts, loss functions, and optimization techniques behind all 10 implemented algorithms.
+2. **`notebooks/algorithms.ipynb`**: Contains step-by-step mathematical translation into clean, from-scratch code for 10 foundational machine learning algorithms using NumPy.
+3. **`notebooks/metrics.ipynb`**: A deep dive into the mathematical formulations of all major regression, classification, and clustering metrics found in `scikit-learn`.
 
 ## 🔧 Code Quality & Linting
 
