@@ -1,38 +1,54 @@
-import numpy as np
 from collections import Counter
+from typing import Self
+import numpy as np
+
+from ..base import BaseEstimator, Features, Target, Prediction
 
 
 class Node:
-    
-    def __init__(self, feature=None, 
-                 threshold=None, left=None, right=None, *, value=None):
+    def __init__(
+        self, 
+        feature: int | None = None, 
+        threshold: float | None = None, 
+        left: "Node | None" = None, 
+        right: "Node | None" = None, 
+        *, 
+        value: int | float | None = None
+    ) -> None:
+        self.feature = feature
+        self.threshold = threshold
+        self.left = left
+        self.right = right
+        self.value = value
 
-       self.feature = feature
-       self.threshold = threshold
-       self.left = left
-       self.right = right
-       self.value = value
-
-    def is_leaf(self):
+    def is_leaf(self) -> bool:
         return self.value is not None 
 
-class DecisionTree:
 
-    def __init__(self, min_samples_split=2, 
-                 min_impurity_decrease=0.0, max_depth=100, n_features=None):
-
+class DecisionTree(BaseEstimator):
+    def __init__(
+        self, 
+        min_samples_split: int = 2, 
+        min_impurity_decrease: float = 0.0, 
+        max_depth: int = 100, 
+        n_features: int | None = None
+    ) -> None:
         self.max_depth = max_depth
         self.min_samples_split = min_samples_split
         self.min_impurity_decrease = min_impurity_decrease
         self.n_features = n_features
-        self.root = None
+        self.root: Node | None = None
 
+    def fit(self, X: Features, y: Target) -> Self:
+        if not self.n_features:
+            self.n_features = X.shape[1]
+        else:
+            self.n_features = min(X.shape[1], self.n_features) 
 
-    def fit(self, X, y):
-        self.n_features = X.shape[1] if not self.n_features else min(X.shape[1], self.n_features) 
         self.root = self._grow_tree(X, y)
+        return self
 
-    def _grow_tree(self, X, y, depth=0):
+    def _grow_tree(self, X: Features, y: Target, depth: int = 0) -> Node:
         n_samples, n_features = X.shape
         labels = np.unique(y)
 
@@ -62,22 +78,25 @@ class DecisionTree:
         
         return Node(split_idx, split_threshold, left_child, right_child)
 
-    def _best_split(self, X, y, feature_idxs):
+    def _best_split(self, X: Features, y: Target, 
+                    feature_idxs: np.ndarray) -> tuple[int | None, float | None, float]:
         best_gain = -1
         split_idx, split_threshold = None, None
 
         for feature_idx in feature_idxs:
             X_column = X[:, feature_idx]
-            for threshold in X_column:
+            thresholds = np.unique(X_column)
+            for threshold in thresholds:
                 gain = self._information_gain(X_column, y, threshold)
                 if gain > best_gain:
                     best_gain = gain
                     split_idx = feature_idx
                     split_threshold = threshold
 
-        return split_idx, split_threshold, gain
+        return split_idx, split_threshold, best_gain
 
-    def _information_gain(self, X_column, y, threshold):
+    def _information_gain(self, X_column: np.ndarray, y: Target, 
+                          threshold: float) -> float:
         # parent entropy
         parent_entropy = self._entropy(y)
 
@@ -91,27 +110,32 @@ class DecisionTree:
 
         return parent_entropy - children_entropy
 
-    def _split(self, X_column, threshold):
+    def _split(self, X_column: np.ndarray, 
+                threshold: float) -> tuple[np.ndarray, np.ndarray]:
         left_idxs = np.argwhere(X_column <= threshold).flatten()
         right_idxs = np.argwhere(X_column > threshold).flatten()
         return left_idxs, right_idxs
 
-    def _entropy(self, y):
+    def _entropy(self, y: Target) -> float:
         counts = np.bincount(y)
         p = counts[counts > 0] / len(y)
         return - (p @ np.log(p)) 
         
-    def _most_common_label(self, y):
+    def _most_common_label(self, y: Target) -> int | float:
         counter = Counter(y)
         return counter.most_common(1)[0][0]
 
-    def predict(self, X):
+    def predict(self, X: Features) -> Prediction:
+        if self.root is None: 
+            raise RuntimeError('Before calling predict, you must fit the model.')
+
         return np.array([self._traverse_tree(x, self.root) for x in X])
 
-    def _traverse_tree(self, x, node):
+    def _traverse_tree(self, x: np.ndarray, node: Node) -> int | float:
         if node.is_leaf():
             return node.value
         
         if x[node.feature] <= node.threshold:
             return self._traverse_tree(x, node.left)
         return self._traverse_tree(x, node.right)
+

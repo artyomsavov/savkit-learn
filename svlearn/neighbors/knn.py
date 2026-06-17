@@ -1,29 +1,34 @@
-import numpy as np
 from collections import Counter
+from typing import Self
+import numpy as np
+
+from ..base import BaseEstimator, Features, Target, Prediction
 
 
-def euclidean_distance(x, y):
-    return np.sum((x - y) ** 2)
-
-class KNN:
-    def __init__(self, k=3):
+class KNN(BaseEstimator):
+    def __init__(self, k: int = 3) -> None:
         self.k = k
+        self.X_train: Features | None = None
+        self.y_train: Target | None = None
 
-    def fit(self, X, y):
+    def fit(self, X: Features, y: Target) -> Self:
         self.X_train = X 
         self.y_train = y
+        return self
     
-    def predict(self, X):
-        predictions = [self._predict(x) for x in X]
-        return predictions
+    def predict(self, X: Features) -> Prediction:
+        if self.X_train is None or self.y_train is None:
+            raise RuntimeError('Before calling predict, you must fit the model.')
 
-    def _predict(self, x):
-        distances = [euclidean_distance(x, x_train) for x_train in self.X_train] 
+        return np.array([self._predict(x) for x in X])
+
+    def _predict(self, x: np.ndarray) -> int | float:
+        distances = np.sqrt(np.sum((self.X_train - x) ** 2, axis=1)) 
 
         k_nearest_indeces = np.argsort(distances)[:self.k]
-        k_nearest_labels = [self.y_train[i] for i in k_nearest_indeces] 
+
+        k_nearest_labels = self.y_train[k_nearest_indeces] 
 
         counter = Counter(k_nearest_labels)
-        majority_label = counter.most_common(1)[0][0]
+        return counter.most_common(1)[0][0]
 
-        return majority_label

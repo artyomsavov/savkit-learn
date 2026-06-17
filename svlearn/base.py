@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from typing import Self
-
 from jaxtyping import Num 
 from numpy.typing import NDArray
 
@@ -16,3 +15,4 @@ class BaseEstimator(ABC):
     @abstractmethod
     def predict(self, X: Features) -> Prediction:
         ...
+

@@ -1,29 +1,36 @@
+from typing import Self
 import numpy as np
 
+from ..base import BaseEstimator, Features, Target, Prediction
 
-def LinearRegression:
-    def __init__(self, lr=0.001, n_iters=1000):
+
+class LinearRegression(BaseEstimator):
+    def __init__(self, lr: float = 0.001, n_iters: int = 1000) -> None:
         self.lr = lr
         self.n_iters = n_iters
-        self.weights = None
-        self.bias = None
+        self.weights: np.ndarray | None = None
+        self.bias: float | None = None
 
-    def fit(self, X, y):
+    def fit(self, X: Features, y: Target) -> Self:
         n_samples, n_features = X.shape
 
-        self.weights = np.zeros(n_features)
+        self.weights = np.zeros(n_features, dtype=np.float64)
         self.bias = 0 
 
-        for _ in range(n_iters):
+        for _ in range(self.n_iters):
             y_pred = X @ self.weights + self.bias
 
-            dw = X.T @ (y_pred - y) / N
-            db = np.sum(y_pred - y) / N 
+            dw = (X.T @ (y_pred - y)) / n_samples 
+            db = np.sum(y_pred - y) / n_samples 
 
-            self.weights = self.weights - lr * dw
-            self.bias = self.bias - lr * db
+            self.weights = self.weights - self.lr * dw
+            self.bias = self.bias - self.lr * db
 
-    def predict(self, X):
-        y_pred = X @ self.weights + self.bias
-        return y_pred 
+        return self
+
+    def predict(self, X: Features) -> Prediction:
+        if self.weights is None or self.bias is None:
+            raise RuntimeError('Before calling predict, you must fit the model.')
+
+        return X @ self.weights + self.bias 
 

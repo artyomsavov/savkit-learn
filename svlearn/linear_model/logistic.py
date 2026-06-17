@@ -1,37 +1,46 @@
+from typing import Self
 import numpy as np
 
+from ..base import BaseEstimator, Features, Target, Prediction
 
-def sigmoid(z):
+
+def sigmoid(z: np.ndarray) -> np.ndarray:
     z = np.clip(z, -500, 500)
     return 1 / (1 + np.exp(-z))
 
-class LogisticRegression():
-
-    def __init__(self, lr=0.001, n_iters=1000):
+class LogisticRegression(BaseEstimator):
+    def __init__(self, lr: float = 0.001, n_iters: int = 1000) -> None:
         self.lr = lr
         self.n_iters = n_iters
-        self.weights = None 
-        self.bias = None
+        self.weights: np.ndarray | None = None 
+        self.bias: float | None = None 
 
-    def fit(self, X, y):
+    def fit(self, X: Features, y: Target) -> Self:
         n_samples, n_features = X.shape
         
-        self.weights = np.zeros(n_features)
-        self.bias = 0
+        self.weights = np.zeros(n_features, dtype=np.float64)
+        self.bias = 0.0
 
         for _ in range(self.n_iters):
-            linear_pred = X @ self.weights + self.bias
-            y_pred = sigmoid(linear_pred)
+            y_pred = sigmoid(X @ self.weights + self.bias)
 
             dw = X.T @ (y_pred - y) / n_samples
             db = np.sum(y_pred - y) / n_samples
 
             self.weights = self.weights - self.lr * dw
             self.bias = self.bias - self.lr * db
+        
+        return self
 
-    def predict(self, X):
+    def predict_proba(self, X: Features) -> Prediction:
+        if self.weights is None or self.bias is None:
+            raise RuntimeError('Before calling predict, you must fit the model.')
+            
         linear_pred = X @ self.weights + self.bias
-        y_pred = sigmoid(linear_pred)
-        labels = [1 if y > 0.5 else 0 for y in y_pred]
-        return labels
+        return sigmoid(linear_pred)
+
+    def predict(self, X: Features) -> Prediction:
+        probabilities = self.predict_proba(X)
+        
+        return (probabilities > 0.5).astype(np.int64)
 
