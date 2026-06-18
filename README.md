@@ -1,5 +1,3 @@
-# svlearn 🚀
-
 A lightweight, clean, and modern machine learning library implemented from scratch using NumPy. This project serves as an educational ecosystem to understand the mathematical foundations and inner workings of popular ML algorithms, structured in a `scikit-learn`-like architecture.
 
 ## 🛠️ Project Structure
