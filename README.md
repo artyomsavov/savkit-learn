@@ -31,7 +31,7 @@ savkit-learn/
 
 ## Key Features
 
-* **Sufficient Theory, Practical Implementation: Mathematical background is covered adequately, and every model's code is explicitly structured according to its formulas — making the connection clear without over‑theorising.
+* **Sufficient Theory, Practical Implementation**: Mathematical background is covered adequately, and every model's code is explicitly structured according to its formulas — making the connection clear without over‑theorising.
 * **Strict Type Checking & Annotations:** Leverages Python 3.12 syntax, `jaxtyping`, and `numpy.typing` for shape and type safety.
 * **Clean Architecture:** Strict object-oriented design using unified `fit` and `predict` interfaces via standard inheritance.
 * **Modern Tooling:** Managed with `uv`, formatted using `ruff`, and statically typed with `pyright`.
