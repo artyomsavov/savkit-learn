@@ -1,6 +1,6 @@
 A lightweight, clean, and modern machine learning library implemented from scratch using NumPy. This project serves as an educational ecosystem to understand the mathematical foundations and inner workings of popular ML algorithms, structured in a `scikit-learn`-like architecture.
 
-## 🛠️ Project Structure
+## Project Structure
 
 ```text
 savkit-learn/
@@ -29,14 +29,14 @@ savkit-learn/
 
 ```
 
-## ✨ Key Features
+## Key Features
 
 * **Sufficient Theory, Practical Implementation: Mathematical background is covered adequately, and every model's code is explicitly structured according to its formulas — making the connection clear without over‑theorising.
 * **Strict Type Checking & Annotations:** Leverages Python 3.12 syntax, `jaxtyping`, and `numpy.typing` for shape and type safety.
 * **Clean Architecture:** Strict object-oriented design using unified `fit` and `predict` interfaces via standard inheritance.
 * **Modern Tooling:** Managed with `uv`, formatted using `ruff`, and statically typed with `pyright`.
 
-## 📦 Installation & Setup
+## Installation & Setup
 
 Clone the repository and install the library using `uv`:
 
@@ -50,9 +50,9 @@ uv pip install .
 
 ```
 
-> 💡 **Note for Development:** If you want to modify the source code and see changes instantly without re-installing, use editable mode instead: `uv pip install -e .`
+> **Note for Development:** If you want to modify the source code and see changes instantly without re-installing, use editable mode instead: `uv pip install -e .`
 
-## 🚀 Quick Start
+## Quick Start
 
 Here is a quick example of training the custom **Logistic Regression** and **Random Forest** models:
 
@@ -77,13 +77,13 @@ rf_predictions = rf.predict(X)
 
 ```
 
-## 📝 Documentation & Notebooks Overview
+## Documentation & Notebooks Overview
 
 1. **`THEORY.md`**: A comprehensive mathematical guide detailing the core concepts, loss functions, and optimization techniques behind all 10 implemented algorithms.
 2. **`notebooks/algorithms.ipynb`**: Contains step-by-step mathematical translation into clean, from-scratch code for 10 foundational machine learning algorithms using NumPy.
 3. **`notebooks/metrics.ipynb`**: A deep dive into the mathematical formulations of all major regression, classification, and clustering metrics found in `scikit-learn`.
 
-## 🔧 Code Quality & Linting
+## Code Quality & Linting
 
 You can run static analysis and formatting checks using the tools configured in `pyproject.toml`:
 
