@@ -4,7 +4,7 @@ A machine learning project implemented from scratch with NumPy. It is educationa
 
 It has two parts:
 
-* **Notebooks:** 10+ classic algorithms derived and implemented from scratch (`notebooks/algorithms.ipynb`), plus a guide to the underlying math (`THEORY.md`) and to evaluation metrics.
+* **Notebooks:** 10 classic algorithms derived and implemented from scratch (`notebooks/algorithms.ipynb`), plus a guide to the underlying math (`THEORY.md`) and to evaluation metrics.
 * **`svlearn` package:** the core models rewritten as a typed library with a `scikit-learn`-like API (`fit` / `predict`).
 
 ## `svlearn` package: models
