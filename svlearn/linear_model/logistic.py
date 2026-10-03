@@ -1,4 +1,3 @@
-
 import numpy as np
 from beartype import beartype
 from jaxtyping import jaxtyped  # pyright: ignore[reportUnknownVariableType]
