@@ -1,19 +1,21 @@
 from collections import Counter
-from typing import Self
-import numpy as np
 
-from ..base import BaseEstimator, Features, Target, Prediction
+import numpy as np
+from beartype import beartype
+from jaxtyping import jaxtyped  # pyright: ignore[reportUnknownVariableType]
+
+from ..base import BaseEstimator, Features, Prediction, Target
 
 
 class Node:
     def __init__(
-        self, 
-        feature: int | None = None, 
-        threshold: float | None = None, 
-        left: "Node | None" = None, 
-        right: "Node | None" = None, 
-        *, 
-        value: int | float | None = None
+        self,
+        feature: int | None = None,
+        threshold: float | None = None,
+        left: "Node | None" = None,
+        right: "Node | None" = None,
+        *,
+        value: int | float | None = None,
     ) -> None:
         self.feature = feature
         self.threshold = threshold
@@ -22,16 +24,16 @@ class Node:
         self.value = value
 
     def is_leaf(self) -> bool:
-        return self.value is not None 
+        return self.value is not None
 
 
 class DecisionTree(BaseEstimator):
     def __init__(
-        self, 
-        min_samples_split: int = 2, 
-        min_impurity_decrease: float = 0.0, 
-        max_depth: int = 100, 
-        n_features: int | None = None
+        self,
+        min_samples_split: int = 2,
+        min_impurity_decrease: float = 0.0,
+        max_depth: int = 100,
+        n_features: int | None = None,
     ) -> None:
         self.max_depth = max_depth
         self.min_samples_split = min_samples_split
@@ -39,21 +41,23 @@ class DecisionTree(BaseEstimator):
         self.n_features = n_features
         self.root: Node | None = None
 
-    def fit(self, X: Features, y: Target) -> Self:
+    @jaxtyped(typechecker=beartype)
+    def fit(self, X: Features, y: Target) -> "DecisionTree":
         if not self.n_features:
             self.n_features = X.shape[1]
         else:
-            self.n_features = min(X.shape[1], self.n_features) 
+            self.n_features = min(X.shape[1], self.n_features)
 
         self.root = self._grow_tree(X, y)
         return self
 
     def _grow_tree(self, X: Features, y: Target, depth: int = 0) -> Node:
-        n_samples, n_features = X.shape
+        _, n_features = X.shape
         labels = np.unique(y)
 
         # criteria
-        if (depth >= self.max_depth
+        if (
+            depth >= self.max_depth
             or len(y) < self.min_samples_split
             or len(labels) == 1
         ):
@@ -62,10 +66,16 @@ class DecisionTree(BaseEstimator):
 
         # random subset
         feature_idxs = np.random.choice(n_features, self.n_features, replace=False)
-        
-        # find splits and check criteria impurity 
+
+        # find splits and check criteria impurity
         split_idx, split_threshold, split_gain = self._best_split(X, y, feature_idxs)
-        
+        if (
+            split_idx is None
+            or split_threshold is None
+            or split_gain < self.min_impurity_decrease
+        ):
+            return Node(value=self._most_common_label(y))
+
         if split_gain < self.min_impurity_decrease:
             leaf_label = self._most_common_label(y)
             return Node(value=leaf_label)
@@ -75,11 +85,12 @@ class DecisionTree(BaseEstimator):
 
         left_child = self._grow_tree(X[left_idxs], y[left_idxs], depth + 1)
         right_child = self._grow_tree(X[right_idxs], y[right_idxs], depth + 1)
-        
+
         return Node(split_idx, split_threshold, left_child, right_child)
 
-    def _best_split(self, X: Features, y: Target, 
-                    feature_idxs: np.ndarray) -> tuple[int | None, float | None, float]:
+    def _best_split(
+        self, X: Features, y: Target, feature_idxs: np.ndarray
+    ) -> tuple[int | None, float | None, float]:
         best_gain = -1
         split_idx, split_threshold = None, None
 
@@ -95,8 +106,9 @@ class DecisionTree(BaseEstimator):
 
         return split_idx, split_threshold, best_gain
 
-    def _information_gain(self, X_column: np.ndarray, y: Target, 
-                          threshold: float) -> float:
+    def _information_gain(
+        self, X_column: np.ndarray, y: Target, threshold: float
+    ) -> float:
         # parent entropy
         parent_entropy = self._entropy(y)
 
@@ -104,14 +116,15 @@ class DecisionTree(BaseEstimator):
         left_idxs, right_idxs = self._split(X_column, threshold)
 
         n = len(y)
-        n_l, n_r = len(left_idxs), len(right_idxs) 
+        n_l, n_r = len(left_idxs), len(right_idxs)
         e_l, e_r = self._entropy(y[left_idxs]), self._entropy(y[right_idxs])
         children_entropy = (n_l / n) * e_l + (n_r / n) * e_r
 
         return parent_entropy - children_entropy
 
-    def _split(self, X_column: np.ndarray, 
-                threshold: float) -> tuple[np.ndarray, np.ndarray]:
+    def _split(
+        self, X_column: np.ndarray, threshold: float
+    ) -> tuple[np.ndarray, np.ndarray]:
         left_idxs = np.argwhere(X_column <= threshold).flatten()
         right_idxs = np.argwhere(X_column > threshold).flatten()
         return left_idxs, right_idxs
@@ -119,23 +132,24 @@ class DecisionTree(BaseEstimator):
     def _entropy(self, y: Target) -> float:
         counts = np.bincount(y)
         p = counts[counts > 0] / len(y)
-        return - (p @ np.log(p)) 
-        
+        return float(-(p @ np.log(p)))
+
     def _most_common_label(self, y: Target) -> int | float:
         counter = Counter(y)
         return counter.most_common(1)[0][0]
 
+    @jaxtyped(typechecker=beartype)
     def predict(self, X: Features) -> Prediction:
-        if self.root is None: 
-            raise RuntimeError('Before calling predict, you must fit the model.')
+        if self.root is None:
+            raise RuntimeError("Before calling predict, you must fit the model.")
 
         return np.array([self._traverse_tree(x, self.root) for x in X])
 
     def _traverse_tree(self, x: np.ndarray, node: Node) -> int | float:
-        if node.is_leaf():
+        if node.value is not None:
             return node.value
-        
+        assert node.feature is not None and node.threshold is not None
+        assert node.left is not None and node.right is not None
         if x[node.feature] <= node.threshold:
             return self._traverse_tree(x, node.left)
         return self._traverse_tree(x, node.right)
-

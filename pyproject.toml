@@ -27,13 +27,10 @@ ignore = []
 [tool.ruff.format]
 quote-style = "double"
 
-[tool.pyright]
-include = ["svlearn"]
-
-venvPath = "."
-venv = "venv"
-
-typeCheckingMode = "basic"
-
 [tool.setuptools.packages.find]
 include = ["svlearn", "svlearn.*"]
+[tool.pyright]
+include = ["svlearn"]
+venvPath = "."
+venv = ".venv"
+typeCheckingMode = "strict"
